@@ -265,105 +265,81 @@ bool fakeAccDetect(acc_t *acc)
 }
 #endif
 
-bool detectGyro(void)
+bool detectGyro(void) //you definately need more beer while coding -CW-
 {
-    gyroSensor_e gyroHardware = GYRO_DEFAULT;
-
+    gyroSensor_e gyroHardware = GYRO_NONE;
     gyroAlign = ALIGN_DEFAULT;
 
-    switch(gyroHardware) {
-        case GYRO_DEFAULT:
-            ; // fallthrough
-        case GYRO_MPU6050:
 #ifdef USE_GYRO_MPU6050
-            if (mpu6050GyroDetect(&gyro)) {
-#ifdef GYRO_MPU6050_ALIGN
-                gyroHardware = GYRO_MPU6050;
-                gyroAlign = GYRO_MPU6050_ALIGN;
+    if (mpu6050GyroDetect(&gyro)) {
+        gyroHardware = GYRO_MPU6050;
+        #ifdef GYRO_MPU6050_ALIGN
+             gyroAlign = GYRO_MPU6050_ALIGN;
+	#endif
+    } else
 #endif
-                break;
-            }
-#endif
-            ; // fallthrough
-        case GYRO_L3G4200D:
+
 #ifdef USE_GYRO_L3G4200D
-            if (l3g4200dDetect(&gyro)) {
-#ifdef GYRO_L3G4200D_ALIGN
-                gyroHardware = GYRO_L3G4200D;
-                gyroAlign = GYRO_L3G4200D_ALIGN;
+    if (l3g4200dDetect(&gyro)) {
+        gyroHardware = GYRO_L3G4200D;
+        #ifdef GYRO_L3G4200D_ALIGN
+             gyroAlign = GYRO_L3G4200D_ALIGN;
+        #endif
+    } else
 #endif
-                break;
-            }
-#endif
-            ; // fallthrough
 
-        case GYRO_MPU3050:
 #ifdef USE_GYRO_MPU3050
-            if (mpu3050Detect(&gyro)) {
-#ifdef GYRO_MPU3050_ALIGN
-                gyroHardware = GYRO_MPU3050;
-                gyroAlign = GYRO_MPU3050_ALIGN;
+    if (mpu3050Detect(&gyro)) {
+        gyroHardware = GYRO_MPU3050;
+        #ifdef GYRO_MPU3050_ALIGN
+            gyroAlign = GYRO_MPU3050_ALIGN;
+        #endif
+    } else
 #endif
-                break;
-            }
-#endif
-            ; // fallthrough
 
-        case GYRO_L3GD20:
 #ifdef USE_GYRO_L3GD20
-            if (l3gd20Detect(&gyro)) {
-#ifdef GYRO_L3GD20_ALIGN
-                gyroHardware = GYRO_L3GD20;
-                gyroAlign = GYRO_L3GD20_ALIGN;
+    if (l3gd20Detect(&gyro)) {
+        gyroHardware = GYRO_L3GD20;
+	#ifdef GYRO_L3GD20_ALIGN
+            gyroAlign = GYRO_L3GD20_ALIGN;
+        #endif
+    } else
 #endif
-                break;
-            }
-#endif
-            ; // fallthrough
 
-        case GYRO_MPU6000:
 #ifdef USE_GYRO_SPI_MPU6000
-            if (mpu6000SpiGyroDetect(&gyro)) {
-#ifdef GYRO_MPU6000_ALIGN
-                gyroHardware = GYRO_MPU6000;
-                gyroAlign = GYRO_MPU6000_ALIGN;
+    if (mpu6000SpiGyroDetect(&gyro)) {
+        gyroHardware = GYRO_MPU6000;
+        #ifdef GYRO_MPU6000_ALIGN
+            gyroAlign = GYRO_MPU6000_ALIGN;
+        #endif
+    } else
 #endif
-                break;
-            }
-#endif
-            ; // fallthrough
 
-        case GYRO_MPU6500:
 #ifdef USE_GYRO_MPU6500
+    if (mpu6500GyroDetect(&gyro)) {
+        gyroHardware = GYRO_MPU6500;
+        #ifdef GYRO_MPU6500_ALIGN
+            gyroAlign = GYRO_MPU6500_ALIGN;
+        #endif
+    } else
+#endif
+
 #ifdef USE_GYRO_SPI_MPU6500
-            if (mpu6500GyroDetect(&gyro) || mpu6500SpiGyroDetect(&gyro))
-#else
-            if (mpu6500GyroDetect(&gyro))
-#endif
-            {
-                gyroHardware = GYRO_MPU6500;
-#ifdef GYRO_MPU6500_ALIGN
-                gyroAlign = GYRO_MPU6500_ALIGN;
+    if (mpu6500SpiGyroDetect(&gyro)) {
+        gyroHardware = GYRO_MPU6500;
+        #ifdef GYRO_MPU6500_ALIGN
+            gyroAlign = GYRO_MPU6500_ALIGN;
+        #endif
+    } else
 #endif
 
-                break;
-            }
-#endif
-            ; // fallthrough
-
-        case GYRO_FAKE:
 #ifdef USE_FAKE_GYRO
-            if (fakeGyroDetect(&gyro)) {
-                gyroHardware = GYRO_FAKE;
-                break;
-            }
+    if (fakeGyroDetect(&gyro)) {
+        gyroHardware = GYRO_FAKE;
+    } else
 #endif
-            ; // fallthrough
-        case GYRO_NONE:
-            gyroHardware = GYRO_NONE;
-    }
 
-    if (gyroHardware == GYRO_NONE) {
+    {
         return false;
     }
 
